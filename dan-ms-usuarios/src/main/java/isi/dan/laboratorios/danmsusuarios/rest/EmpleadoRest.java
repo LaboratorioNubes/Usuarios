@@ -18,10 +18,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import isi.dan.laboratorios.danmsusuarios.domain.Empleado;
 
 @RestController
 @RequestMapping(EmpleadoRest.API_EMPLEADO)
+@Api(value = "EmpleadoRest", description = "Permite gestionar los empleados de la empresa")
 public class EmpleadoRest {
     static final String API_EMPLEADO = "/api/empleado";
     
@@ -29,44 +35,38 @@ public class EmpleadoRest {
     private static Integer ID_GEN = 1;
 
     @GetMapping(path = "/{id}")
+    @ApiOperation(value = "Busca un empleado por id")
     public ResponseEntity<Empleado> empleadoPorId(@PathVariable Integer id){
 
-        Optional<Empleado> c =  listaEmpleados
-                .stream()
-                .filter(unCli -> unCli.getId().equals(id))
-                .findFirst();
-        return ResponseEntity.of(c);
-    }
-
-    @GetMapping
-    public ResponseEntity<List<Empleado>> todos(){
-        return ResponseEntity.ok(listaEmpleados);
-    }
-
-    // GET por id -> Retorna un único empleado
-    @GetMapping(path = "/id/{id}")
-    public ResponseEntity<Empleado> empleadoPorId(@PathVariable String id) {
         Optional<Empleado> e =  listaEmpleados
                 .stream()
-                .filter(unEmp -> unEmp.getId().toString().equals(id)) 
+                .filter(unEmp -> unEmp.getId().equals(id))
                 .findFirst();
         return ResponseEntity.of(e);
     }
 
+    @GetMapping
+    @ApiOperation(value = "Retorna todos los empleados")
+    public ResponseEntity<List<Empleado>> todos(){
+        return ResponseEntity.ok(listaEmpleados);
+    }
+
     // GET por nombre (query string OPC) -> Retorna una lista de empleados 
     @GetMapping(path = "/nombre")
+    @ApiOperation(value = "Busca un empleado por nombre de usuario")
     @ResponseBody
-    public ResponseEntity<List<Empleado>> empleadoPorNombre(
+    public ResponseEntity<Empleado> empleadoPorNombre(
         @RequestParam(required = false) String nombre) {
-        List<Empleado> e =  listaEmpleados
+        Optional<Empleado> e =  listaEmpleados
                 .stream()
                 .filter(unEmp -> unEmp.getUser().getUser().equals(nombre))
-                .collect(Collectors.toList());
+                .findFirst();
 
-        return ResponseEntity.ok(e);
+        return ResponseEntity.of(e);
     }
 
     @PostMapping
+    @ApiOperation("Da de alta un empleado")
     public ResponseEntity<Empleado> crear(@RequestBody Empleado nuevo){
     	System.out.println("Crear empleado "+ nuevo);
         nuevo.setId(ID_GEN++);
@@ -75,12 +75,20 @@ public class EmpleadoRest {
     }
 
     @PutMapping(path = "/{id}")
+    @ApiOperation(value = "Actualiza un empleado")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Actualizado correctamente"),
+        @ApiResponse(code = 401, message = "No autorizado"),
+        @ApiResponse(code = 403, message = "Prohibido"),
+        @ApiResponse(code = 404, message = "El ID no existe")
+    })
     public ResponseEntity<Empleado> actualizar(@RequestBody Empleado nuevo,  @PathVariable Integer id) {
-        OptionalInt indexOpt =   IntStream.range(0, listaEmpleados.size())
+        OptionalInt indexOpt = IntStream.range(0, listaEmpleados.size())
         .filter(i -> listaEmpleados.get(i).getId().equals(id))
         .findFirst();
 
         if(indexOpt.isPresent()){
+            nuevo.setId(id);
             listaEmpleados.set(indexOpt.getAsInt(), nuevo);
             return ResponseEntity.ok(nuevo);
         } else {
@@ -89,6 +97,7 @@ public class EmpleadoRest {
     }
 
     @DeleteMapping(path = "/{id}")
+    @ApiOperation(value = "Elimina un empleado")
     public ResponseEntity<Empleado> borrar(@PathVariable Integer id){
         OptionalInt indexOpt =   IntStream.range(0, listaEmpleados.size())
         .filter(i -> listaEmpleados.get(i).getId().equals(id))

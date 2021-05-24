@@ -19,10 +19,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiResponse;
+import io.swagger.annotations.ApiResponses;
 import isi.dan.laboratorios.danmsusuarios.domain.Cliente;
 
 @RestController
 @RequestMapping(ClienteRest.API_CLIENTE)
+@Api(value = "ClienteRest", description = "Permite gestionar los clientes de la empresa")
 public class ClienteRest {
     static final String API_CLIENTE = "/api/cliente";
     
@@ -30,6 +35,7 @@ public class ClienteRest {
     private static Integer ID_GEN = 1;
 
     @GetMapping(path = "/{id}")
+    @ApiOperation(value = "Busca un cliente por id")
     public ResponseEntity<Cliente> clientePorId(@PathVariable Integer id){
 
         Optional<Cliente> c =  listaClientes
@@ -40,12 +46,14 @@ public class ClienteRest {
     }
 
     @GetMapping
+    @ApiOperation(value = "Retorna una lista de todos los clientes")
     public ResponseEntity<List<Cliente>> todos(){
         return ResponseEntity.ok(listaClientes);
     }
 
     // GET por cuit -> Retorna un único cliente
     @GetMapping(path = "/cuit/{cuit}")
+    @ApiOperation(value = "Busca un cliente por cuit")
     public ResponseEntity<Cliente> clientePorCuit(@PathVariable String cuit) {
         Optional<Cliente> c =  listaClientes
                 .stream()
@@ -56,6 +64,7 @@ public class ClienteRest {
 
     // GET por razon social (query string OPC) -> Retorna una lista de clientes con la razon social especificada, example: "api/cliente/razonsocial?razonSocial=example"
     @GetMapping(path = "/razonsocial")
+    @ApiOperation(value = "Retorna una lista de clientes que contengan la razon social especificada, no es un parametro obligatorio")
     @ResponseBody
     public ResponseEntity<List<Cliente>> clientePorRazonSocial(
         @RequestParam(required = false) String razonSocial) {
@@ -68,6 +77,7 @@ public class ClienteRest {
     }
 
     @PostMapping
+    @ApiOperation(value = "Da de alta un cliente")
     public ResponseEntity<Cliente> crear(@RequestBody Cliente nuevo){
     	System.out.println("Crear cliente "+ nuevo);
         nuevo.setId(ID_GEN++);
@@ -76,12 +86,20 @@ public class ClienteRest {
     }
 
     @PutMapping(path = "/{id}")
+    @ApiOperation(value = "Actualiza un cliente")
+    @ApiResponses(value = {
+        @ApiResponse(code = 200, message = "Actualizado correctamente"),
+        @ApiResponse(code = 401, message = "No autorizado"),
+        @ApiResponse(code = 403, message = "Prohibido"),
+        @ApiResponse(code = 404, message = "El ID no existe")
+    })
     public ResponseEntity<Cliente> actualizar(@RequestBody Cliente nuevo,  @PathVariable Integer id) {
         OptionalInt indexOpt =   IntStream.range(0, listaClientes.size())
         .filter(i -> listaClientes.get(i).getId().equals(id))
         .findFirst();
 
         if(indexOpt.isPresent()){
+            nuevo.setId(id);
             listaClientes.set(indexOpt.getAsInt(), nuevo);
             return ResponseEntity.ok(nuevo);
         } else {
@@ -90,6 +108,7 @@ public class ClienteRest {
     }
 
     @DeleteMapping(path = "/{id}")
+    @ApiOperation(value = "Borra un cliente")
     public ResponseEntity<Cliente> borrar(@PathVariable Integer id){
         OptionalInt indexOpt =   IntStream.range(0, listaClientes.size())
         .filter(i -> listaClientes.get(i).getId().equals(id))
