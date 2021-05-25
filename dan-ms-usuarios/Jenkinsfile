@@ -9,7 +9,7 @@ pipeline {
             }
             steps {
                 bat "java -version"
-                bat "./mvnw clean"
+                bat "mvnw clean"
             }
         }
         stage('clean-develop') {
