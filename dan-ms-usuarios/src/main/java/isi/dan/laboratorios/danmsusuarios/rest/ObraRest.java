@@ -53,11 +53,11 @@ public class ObraRest {
     }
 
     //GET por cliente y/o tipo de obra (query string OPC) -> Retorna una lista de obras
-    @GetMapping(path = "/nombre")
+    @GetMapping(path = "/obras")
     @ApiOperation(value = "Busca una lista de obras por id de cliente, id del tipo de obra o ambas")
     @ResponseBody
     public ResponseEntity<List<Obra>> obraPorClienteOTipoObra(
-        @RequestParam(required = false) String idCliente, @RequestParam(required = false) String tipoObra) {
+        @RequestParam(required = false) Integer idCliente, @RequestParam(required = false) String tipoObra) {
 
         List<Obra> o =  listaObras
                 .stream()
