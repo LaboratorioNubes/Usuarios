@@ -18,7 +18,7 @@ pipeline {
             }
             steps {
                 bat "java -version"
-                bat "./mvnw clean"
+                bat "mvnw clean"
                 bat "echo buildeando develop"
             }
         }
