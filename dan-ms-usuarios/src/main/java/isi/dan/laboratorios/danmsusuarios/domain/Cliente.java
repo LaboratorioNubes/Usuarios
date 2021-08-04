@@ -1,5 +1,6 @@
 package isi.dan.laboratorios.danmsusuarios.domain;
 
+import java.util.Date;
 import java.util.List;
 
 public class Cliente {
@@ -13,9 +14,12 @@ public class Cliente {
     private Usuario user;
     private List<Obra> obras;
 
+	private Date fechaBaja;
+
 	public Integer getId() {
 		return id;
 	}
+	
 	public void setId(Integer id) {
 		this.id = id;
 	}
@@ -62,4 +66,11 @@ public class Cliente {
 		this.obras = obras;
 	}
     
+	public Date getFechaBaja() {
+		return fechaBaja;
+	}
+	public void setFechaBaja(Date date) {
+		this.fechaBaja = date;
+	}
+	
 }
