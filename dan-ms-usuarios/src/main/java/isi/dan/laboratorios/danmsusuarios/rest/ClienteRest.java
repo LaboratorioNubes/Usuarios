@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,6 @@ public class ClienteRest {
     @GetMapping(path = "/{id}")
     @ApiOperation(value = "Busca un cliente por id")
     public ResponseEntity<Cliente> clientePorId(@PathVariable Integer id){
-
         /*Optional<Cliente> c =  listaClientes
                 .stream()
                 .filter(unCli -> unCli.getId().equals(id))
@@ -82,7 +82,7 @@ public class ClienteRest {
                 .collect(Collectors.toList());
 
         return ResponseEntity.ok(c);*/
-        return ResponseEntity.ok(clienteService.buscarClientes(razonSocial)));
+        return ResponseEntity.ok(clienteService.buscarClientes(razonSocial));
     }
 
     @PostMapping
@@ -91,6 +91,17 @@ public class ClienteRest {
         /*nuevo.setId(ID_GEN++);
         listaClientes.add(nuevo);
         return ResponseEntity.ok(nuevo);*/
+
+        /*if(nuevo.getObras().size() == 0) {
+            return 
+        }
+        else {
+
+        } */
+        if (nuevo.getUser().getUser().isEmpty() || nuevo.getUser().getPassword().isEmpty() ) {
+            return ResponseEntity.of();
+        }
+
         return ResponseEntity.ok(clienteService.guardarCliente(nuevo));
     }
 
