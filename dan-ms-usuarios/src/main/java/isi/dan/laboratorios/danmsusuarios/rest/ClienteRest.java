@@ -26,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import isi.dan.laboratorios.danmsusuarios.domain.Cliente;
+import isi.dan.laboratorios.danmsusuarios.domain.Obra;
 import isi.dan.laboratorios.danmsusuarios.services.ClienteService;
 
 @RestController
@@ -87,22 +88,26 @@ public class ClienteRest {
 
     @PostMapping
     @ApiOperation(value = "Da de alta un cliente")
-    public ResponseEntity<Cliente> crear(@RequestBody Cliente nuevo){
+    public ResponseEntity<String> crear(@RequestBody Cliente nuevo){
         /*nuevo.setId(ID_GEN++);
         listaClientes.add(nuevo);
         return ResponseEntity.ok(nuevo);*/
 
-        /*if(nuevo.getObras().size() == 0) {
-            return 
+        if(nuevo.getObras() == null || nuevo.getObras().size() == 0) {
+            return ResponseEntity.badRequest().body("Debe tener una o mas obras.");
         }
         else {
-
-        } */
-        if (nuevo.getUser().getUser().isEmpty() || nuevo.getUser().getPassword().isEmpty() ) {
-            return ResponseEntity.of();
+            for(Obra ob: nuevo.getObras()) {
+                if(ob.getTipo() == null) {
+                    return ResponseEntity.badRequest().body("La obra " + ob.getId() + " debe tener un tipo asignado.");
+                }
+            }
+        } 
+        if (nuevo.getUser().getUser() == null || nuevo.getUser().getPassword() == null ) {
+            return ResponseEntity.badRequest().body("Debe tener un usuario y una contraseña asignados.");
         }
-
-        return ResponseEntity.ok(clienteService.guardarCliente(nuevo));
+        clienteService.guardarCliente(nuevo);
+        return ResponseEntity.ok().body("Cliente creado con exito");
     }
 
     @PutMapping(path = "/{id}")
