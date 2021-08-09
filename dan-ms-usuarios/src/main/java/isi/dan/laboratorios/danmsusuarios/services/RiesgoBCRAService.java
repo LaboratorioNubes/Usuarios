@@ -1,9 +1,9 @@
 package isi.dan.laboratorios.danmsusuarios.services;
 
-import isi.dan.laboratorios.danmsusuarios.domain.Cliente;
+import isi.dan.laboratorios.danmsusuarios.dtos.ClienteDTO;
 
 public interface RiesgoBCRAService {
     
-    public Integer getRiesgoBCRA(Cliente c);
+    public Integer getRiesgoBCRA(ClienteDTO c);
     
 }

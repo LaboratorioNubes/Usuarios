@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import isi.dan.laboratorios.danmsusuarios.domain.Cliente;
+import isi.dan.laboratorios.danmsusuarios.dtos.ClienteDTO;
 import isi.dan.laboratorios.danmsusuarios.repositories.ClienteRepository;
 import isi.dan.laboratorios.danmsusuarios.services.ClienteService;
 
@@ -20,8 +21,10 @@ public class ClienteServiceImpl implements ClienteService {
     @Autowired
     ClienteRepository clienteRepo;
 
+    Cliente cliNuevo; 
+
     @Override
-    public Cliente guardarCliente(Cliente cli) {
+    public Cliente guardarCliente(ClienteDTO cli) {
         Integer riesgoCli = riesgoService.getRiesgoBCRA(cli);
         if (riesgoCli == 1 || riesgoCli == 2) {
             cli.setHabilitadoOnline(true);
@@ -30,7 +33,15 @@ public class ClienteServiceImpl implements ClienteService {
             cli.setHabilitadoOnline(false);
         }
 
-        return this.clienteRepo.save(cli);
+        cliNuevo = new Cliente();
+        cliNuevo.setRazonSocial(cli.getRazonSocial());
+        cliNuevo.setCuit(cli.getCuit());
+        cliNuevo.setMail(cli.getMail());
+        cliNuevo.setMaxCuentaCorriente(cli.getMaxCuentaCorriente());
+        cliNuevo.setUser(cli.getUser());
+        cliNuevo.setObras(cli.getObras());
+        
+        return this.clienteRepo.save(cliNuevo);
     }
 
     @Override
@@ -60,7 +71,7 @@ public class ClienteServiceImpl implements ClienteService {
     }
 
     @Override
-    public Optional<Cliente> actualizarCliente(Cliente cli, Integer id) {
+    public Optional<Cliente> actualizarCliente(ClienteDTO cli, Integer id) {
         // TODO Not possible without bdd
         return null;
     }
