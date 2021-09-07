@@ -4,6 +4,6 @@ import isi.dan.laboratorios.danmsusuarios.dtos.ClienteDTO;
 
 public interface RiesgoBCRAService {
     
-    public Integer getRiesgoBCRA(ClienteDTO c);
+    public Integer getRiesgoBCRA();
     
 }

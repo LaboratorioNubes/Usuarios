@@ -15,7 +15,10 @@ public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    private String user, password;
+
+    @Column(unique = true)
+    private String user;
+    private String password;
 
     @OneToOne
     private TipoUsuario tipoUsuario;

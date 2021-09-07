@@ -1,12 +1,20 @@
 package isi.dan.laboratorios.danmsusuarios.services.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import isi.dan.laboratorios.danmsusuarios.domain.Obra;
+import isi.dan.laboratorios.danmsusuarios.domain.Usuario;
+import isi.dan.laboratorios.danmsusuarios.dtos.requests.ClienteRequestDTO;
+import isi.dan.laboratorios.danmsusuarios.dtos.requests.ObraRequestDTO;
+import isi.dan.laboratorios.danmsusuarios.exceptions.BadRequestException;
+import isi.dan.laboratorios.danmsusuarios.exceptions.DataNotFoundException;
+import isi.dan.laboratorios.danmsusuarios.utils.ListMapper;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import isi.dan.laboratorios.danmsusuarios.domain.Cliente;
 import isi.dan.laboratorios.danmsusuarios.dtos.ClienteDTO;
 import isi.dan.laboratorios.danmsusuarios.repositories.ClienteRepository;
@@ -21,59 +29,100 @@ public class ClienteServiceImpl implements ClienteService {
     @Autowired
     ClienteRepository clienteRepo;
 
-    Cliente cliNuevo; 
+    @Autowired
+    UsuarioServiceImpl usuarioService;
+
+    @Autowired
+    ObraServiceImpl obraService;
+
+    @Autowired
+    ModelMapper modelMapper;
+
+    @Autowired
+    ListMapper listMapper;
 
     @Override
-    public Cliente guardarCliente(ClienteDTO cli) {
-        Integer riesgoCli = riesgoService.getRiesgoBCRA(cli);
+    public ClienteDTO guardarCliente(ClienteRequestDTO clienteDTO) {
+
+        Cliente cliente = new Cliente();
+
+        Integer riesgoCli = riesgoService.getRiesgoBCRA();
         if (riesgoCli == 1 || riesgoCli == 2) {
-            cli.setHabilitadoOnline(true);
+            cliente.setHabilitadoOnline(true);
         }
         else {
-            cli.setHabilitadoOnline(false);
+            cliente.setHabilitadoOnline(false);
         }
 
-        cliNuevo = new Cliente();
-        cliNuevo.setRazonSocial(cli.getRazonSocial());
-        cliNuevo.setCuit(cli.getCuit());
-        cliNuevo.setMail(cli.getMail());
-        cliNuevo.setMaxCuentaCorriente(cli.getMaxCuentaCorriente());
-        cliNuevo.setUser(cli.getUser());
-        cliNuevo.setObras(cli.getObras());
+        Usuario user = modelMapper.map(usuarioService.findByUser(clienteDTO.getNombre()), Usuario.class);
+
+        if (user==null){
+            throw new BadRequestException("El usuario: " + clienteDTO.getNombre() + " no existe");
+        }
+
+        List<Obra> obraList = new ArrayList<>();
+
+        for(ObraRequestDTO obra: clienteDTO.getObras()){
+            Obra o = modelMapper.map(obraService.findById(obra.getId()), Obra.class);
+
+            if(o==null){
+                throw new DataNotFoundException("La obra con id: " + obra.getId() + " no existe");
+            }else if(!obra.getTipo().equals(o.getTipo())){
+                throw new BadRequestException("El tipo de obra no es correcto");
+            }
+
+            obraList.add(o);
+        }
+
+        cliente.setObras(obraList);
+        cliente.setMail(clienteDTO.getMail());
+        cliente.setUser(user);
+        cliente.setRazonSocial(clienteDTO.getRazonSocial());
+        cliente.setCuit(clienteDTO.getCuit());
         
-        return this.clienteRepo.save(cliNuevo);
+        return modelMapper.map(clienteRepo.save(cliente), ClienteDTO.class);
     }
 
     @Override
-    public Optional<Cliente> buscarCliente(Integer id) {
+    public ClienteDTO buscarCliente(Integer id) {
        Optional<Cliente> cli = this.clienteRepo.findById(id);
-       if (cli.get().getFechaBaja() == null) {
-            return cli;
+       if (!cli.isPresent()) {
+            throw new DataNotFoundException("El cliente con id: " + id + " no existe");
        }
-       return Optional.empty();
+       return modelMapper.map(cli.get(), ClienteDTO.class);
     }
 
     @Override
-    public Optional<Cliente> buscarCliente(String cuit) {
-        // TODO Not possible without bdd
-        return null;
+    public ClienteDTO buscarCliente(String cuit) {
+        Optional<Cliente> cliente = Optional.ofNullable(clienteRepo.findByCuit(cuit));
+
+        if(!cliente.isPresent()){
+            throw new DataNotFoundException("El cliente con cuit: " + cuit + " no existe");
+        }
+
+        return modelMapper.map(cliente.get(), ClienteDTO.class);
     }
 
     @Override
-    public Iterable<Cliente> buscarClientes() {
-        return this.clienteRepo.findAll();
+    public List<ClienteDTO> buscarClientes() {
+        return listMapper.mapList(clienteRepo.findAll(), ClienteDTO.class);
     }
 
     @Override
-    public Optional<Iterable<Cliente>> buscarClientes(String razonSocial) {
-        // TODO Not possible without bdd
-        return null;
+    public List<ClienteDTO> buscarClientes(String razonSocial) {
+        Optional<List<Cliente>> clientes = Optional.ofNullable(clienteRepo.findByRazonSocial(razonSocial));
+        return listMapper.mapList(clientes.get(), ClienteDTO.class);
     }
 
     @Override
-    public Optional<Cliente> actualizarCliente(ClienteDTO cli, Integer id) {
-        // TODO Not possible without bdd
-        return null;
+    public ClienteDTO actualizarCliente(ClienteDTO cli) {
+        Optional<Cliente> cliente = clienteRepo.findById(cli.getId());
+
+        if(!cliente.isPresent()){
+            throw new DataNotFoundException("El cliente con id: " + cli.getId() + " no existe");
+        }
+
+        return modelMapper.map(clienteRepo.save(modelMapper.map(cli, Cliente.class)), ClienteDTO.class);
     }
 
     // Tiene obras osea que tiene pedidos? TODO 

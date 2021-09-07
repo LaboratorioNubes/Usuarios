@@ -14,13 +14,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ClienteDTO {
+    private Integer id;
     private String razonSocial;
     private String cuit;
     private String mail;
     private Double maxCuentaCorriente;
     private Boolean habilitadoOnline;
-    private Usuario user;
-    private List<Obra> obras;
-
+    private UsuarioDTO user;
+    private List<ObraDTO> obras;
     private Date fechaBaja;    
 }

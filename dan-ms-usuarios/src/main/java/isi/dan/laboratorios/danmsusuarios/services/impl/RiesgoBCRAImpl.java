@@ -9,7 +9,7 @@ import isi.dan.laboratorios.danmsusuarios.services.RiesgoBCRAService;
 public class RiesgoBCRAImpl implements RiesgoBCRAService {
 
     @Override
-    public Integer getRiesgoBCRA(ClienteDTO c) {
+    public Integer getRiesgoBCRA() {
         return (int) (Math.random() * 6 + 1);
     }
     
