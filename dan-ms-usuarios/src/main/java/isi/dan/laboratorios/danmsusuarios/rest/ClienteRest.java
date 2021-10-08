@@ -1,15 +1,10 @@
 package isi.dan.laboratorios.danmsusuarios.rest;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.OptionalInt;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import isi.dan.laboratorios.danmsusuarios.dtos.requests.ClienteRequestDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +22,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import isi.dan.laboratorios.danmsusuarios.domain.Cliente;
-import isi.dan.laboratorios.danmsusuarios.domain.Obra;
 import isi.dan.laboratorios.danmsusuarios.dtos.ClienteDTO;
 import isi.dan.laboratorios.danmsusuarios.services.ClienteService;
 
