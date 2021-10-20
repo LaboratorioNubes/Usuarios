@@ -27,5 +27,5 @@ public class ClienteRequestDTO {
     private String cuit;
 
     @NotEmpty(message = "Debe indicar por lo menos una obra")
-    private List<@Valid ObraRequestDTO> obras;
+    private List<@Valid ObraClienteRequestDTO> obras;
 }

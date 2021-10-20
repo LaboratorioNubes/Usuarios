@@ -15,11 +15,10 @@ public class Obra {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-	private String descripcion;
-	private Float latitud;
-	private Float longitud;
+	private String nombre;
 	private String direccion;
-	private Integer superficie;
+	private String telefono;
+	private String descripcion;
 
 	@OneToOne
 	private TipoObra tipo;

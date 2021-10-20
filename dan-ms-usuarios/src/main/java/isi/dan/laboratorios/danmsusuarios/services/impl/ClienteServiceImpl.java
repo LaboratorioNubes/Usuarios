@@ -8,7 +8,7 @@ import java.util.Optional;
 import isi.dan.laboratorios.danmsusuarios.domain.Obra;
 import isi.dan.laboratorios.danmsusuarios.domain.Usuario;
 import isi.dan.laboratorios.danmsusuarios.dtos.requests.ClienteRequestDTO;
-import isi.dan.laboratorios.danmsusuarios.dtos.requests.ObraRequestDTO;
+import isi.dan.laboratorios.danmsusuarios.dtos.requests.ObraClienteRequestDTO;
 import isi.dan.laboratorios.danmsusuarios.exceptions.BadRequestException;
 import isi.dan.laboratorios.danmsusuarios.exceptions.DataNotFoundException;
 import isi.dan.laboratorios.danmsusuarios.utils.ListMapper;
@@ -62,7 +62,7 @@ public class ClienteServiceImpl implements ClienteService {
 
         List<Obra> obraList = new ArrayList<>();
 
-        for(ObraRequestDTO obra: clienteDTO.getObras()){
+        for(ObraClienteRequestDTO obra: clienteDTO.getObras()){
             Obra o = modelMapper.map(obraService.findById(obra.getId()), Obra.class);
 
             if(o==null){
