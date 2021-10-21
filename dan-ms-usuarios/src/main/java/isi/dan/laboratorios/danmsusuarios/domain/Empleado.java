@@ -1,14 +1,7 @@
 package isi.dan.laboratorios.danmsusuarios.domain;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 @Entity
 public class Empleado {
 
@@ -16,6 +9,39 @@ public class Empleado {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 	private String mail;
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public Empleado(Integer id, String mail, Usuario user) {
+		this.id = id;
+		this.mail = mail;
+		this.user = user;
+	}
+
+	public Empleado() {
+	}
+
+	public Usuario getUser() {
+		return user;
+	}
+
+	public void setUser(Usuario user) {
+		this.user = user;
+	}
 
 	@OneToOne
 	private Usuario user;
